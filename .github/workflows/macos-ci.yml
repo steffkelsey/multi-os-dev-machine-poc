@@ -1,0 +1,45 @@
+---
+name: macOS-CI
+'on':
+  pull_request:
+  push:
+    branches:
+      - main
+
+jobs:
+  test:
+    name: Molecule
+    runs-on: ${{ matrix.os }}
+    strategy:
+      max-parallel: 4
+      matrix:
+        # If we want to test multiple operating systems, add to the list below.
+        os: ["macos-11"]
+        # Possible to toggle onto M1 silicon by changing platform to `arm64` BUT
+        # I'm not sure if it has official GitHub support (yet).
+        platform: [x86_64]
+        python-version: [3.8.10]
+        # If we want to test multiple scenarios, add to the list below.
+        # NOTE - scenarios match the folder names in ./molecule by default.
+        scenario: ["macos"]
+    steps:
+      - name: Check out the codebase.
+        uses: actions/checkout@v2
+
+      - name: Set up Python 3.
+        uses: actions/setup-python@v2
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Install test dependencies.
+        run: pip3 install ansible molecule[lint] yamllint ansible-lint
+
+      - name: Setup test environment.
+        run: ansible-galaxy install -r requirements.yml
+
+      - name: Run Molecule tests.
+        run: molecule test -s "${SCENARIO}"
+        env:
+          PY_COLORS: '1'
+          ANSIBLE_FORCE_COLOR: '1'
+          SCENARIO: ${{ matrix.scenario }}

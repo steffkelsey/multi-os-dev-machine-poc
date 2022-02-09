@@ -1,0 +1,6 @@
+---
+roles:
+  - name: baztian.asdf
+    version: v0.0.4
+  - name: osx_provisioner.asdf
+    version: v0.2.2

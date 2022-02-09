@@ -1,0 +1,47 @@
+---
+# Playbook that installs asdf for either Ubuntu 20.04 or macOS depending on
+# the facts gathered from ansible.
+# This playbook is an example of using open source roles and conditional logic
+# to provision software onto a dev machine where the installed versions are
+# consistent across platforms. In this case, the platforms we are demonstrating
+# are Ubuntu and macOS.
+
+- name: Install Dev Machine tools
+  hosts: all
+  become: true
+  gather_facts: true
+
+  # Load the default var files.
+  # Any of these can be overwritten using `--extra-vars` flags
+  vars_files:
+    - default.config.yml
+
+  pre_tasks:
+    - name: multi-os-dev-machine-pos | Maybe run linux pretasks
+      include_tasks: tasks/linux_pretasks.yml
+      when: ansible_facts['distribution'] != "MacOSX"
+
+    - name: multi-os-dev-machine-pos | Maybe run macOS pretasks
+      include_tasks: tasks/macos_pretasks.yml
+      when: ansible_facts['distribution'] == "MacOSX"
+
+  tasks:
+    - name: multi-os-dev-machine-pos | Maybe install asdf on Linux
+      include_role:
+        name: baztian.asdf
+      when:
+        - asdf_install
+        - ansible_facts['distribution'] != "MacOSX"
+
+    - name: multi-os-dev-machine-pos | Maybe install asdf on macOS
+      include_role:
+        name: osx_provisioner.asdf
+      vars:
+        # The macOS plugin puts a "v" in front of the version. We set that fact
+        # in the macOS pre-task. Just grab it here. You can't do
+        # asdf_version: "v{{ asdf_version }}" because it is a recursive death
+        # loop.
+        asdf_version: "{{ asdf_version_macos }}"
+      when:
+        - asdf_install
+        - ansible_facts['distribution'] == "MacOSX"
