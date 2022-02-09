@@ -1,0 +1,5 @@
+---
+
+- name: multi-os-dev-machine-poc | Define target asdf version for macOS
+  set_fact:
+    asdf_version_macos: "v{{ asdf_version }}"

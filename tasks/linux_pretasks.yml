@@ -1,0 +1,8 @@
+---
+- name: "multi-os-dev-machine-poc | Update the apt cache repositories"
+  # setting cache_valid_time to 1 day (86,400 seconds) so we only do the
+  # expensive apt-update once during heavy testing sessions
+  apt: cache_valid_time=86400
+  # Only running this on Ubuntu right now. Will add more if we want to support
+  # more Linux distros. Since this is a POC, who knows?
+  when: ansible_facts['distribution'] == "Ubuntu"

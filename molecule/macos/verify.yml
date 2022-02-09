@@ -1,0 +1,38 @@
+---
+- name: Verify
+  hosts: all
+  gather_facts: true
+
+  vars_files:
+    - ../../default.config.yml
+
+  tasks:
+
+    - name: Set asdf_source Variable
+      set_fact:
+        "asdf_source": "{{ asdf_home }}/.asdf/asdf.sh"
+
+    - name: Capture asdf --help response when interactive bash shell
+      command: "bash -lc 'source {{ asdf_source }}; asdf --help'"
+      become: true
+      become_user: "{{ asdf_user }}"
+      register: asdf_help_output
+      changed_when: false
+
+    - name: Check that asdf works from interative bash shell
+      assert:
+        that: "'asdf plugin' in asdf_help_output.stdout"
+
+    # Also wanted to check that one of the plugins we installed is working in
+    # bash. Not to test that asdf plugins were installed, but that a dev could
+    # actually use them from bash.
+    - name: Capture node help response when interactive bash shell
+      command: "bash -lc 'source {{ asdf_source }}; node --help'"
+      become: true
+      become_user: "{{ asdf_user }}"
+      register: node_help_output
+      changed_when: false
+
+    - name: Check that node works from interactive bash shell
+      assert:
+        that: "'Usage: node' in node_help_output.stdout"
