@@ -1,5 +1,9 @@
 ---
 
+# The role for installing asdf on macOS has slightly different variables than
+# the Ubuntu role. Since Ubuntu was implemented first, it became the default.
+# This task interpolates the asdf version number into the format preferred by
+# the macOS role.
 - name: multi-os-dev-machine-poc | Define target asdf version for macOS
   set_fact:
     asdf_version_macos: "v{{ asdf_version }}"

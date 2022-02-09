@@ -9,13 +9,13 @@ driver:
       ansible_connection: local
       ansible_sudo_pass: "${ANSIBLE_SUDO_PASSWORD}"
   become_method: sudo
+lint: |
+  set -e
+  yamllint .
+  ansible-lint --exclude ${HOME}/.ansible/roles/ --exclude ${HOME}/.cache/
 platforms:
   - name: instance
 provisioner:
   name: ansible
 verifier:
   name: ansible
-lint: |
-  set -e
-  yamllint -f standard .
-  ansible-lint

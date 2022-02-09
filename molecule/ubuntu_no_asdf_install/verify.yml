@@ -1,0 +1,15 @@
+---
+- name: Verify
+  hosts: all
+  gather_facts: true
+
+  tasks:
+    - name: Check for the asdf file
+      stat:
+        path: /opt/asdf/bin/asdf
+      register: asdf_binary
+      changed_when: false
+
+    - name: Check that asdf is not present
+      assert:
+        that: not asdf_binary.stat.exists
