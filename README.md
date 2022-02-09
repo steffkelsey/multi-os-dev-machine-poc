@@ -36,6 +36,16 @@ To provision, navigate to the root directory of this repo and run:
 
     $ ansible-playbook main.yml --ask-become-pass
 
+There are two ways to customize the result of playbook. The first is to use the
+`--extra-vars` flag to change the variables. If you didn't want to install asdf:
+
+    $ ansible-playbook main.yml --ask-become-pass --extra-vars "asdf_install=false"
+
+Alternatively, you can make your own version of the default.config.yml, setting
+`asdf_install: false`.
+
+See below for list of variables and their defaults from the default.config.yml
+
 Variables
 ------------
 
@@ -67,6 +77,8 @@ Controls the plugins and versions that asdf should install. (default below)
     - name: nodejs
       versions: ["14.17.6", "16.13.2"]
       global: "16.13.2"
+
+All current defaults can be found in the default.config.yml at the project root.
 
 Dependencies
 ------------
